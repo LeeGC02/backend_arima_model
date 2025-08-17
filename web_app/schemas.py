@@ -1,3 +1,4 @@
+"""
 from pydantic import BaseModel, Field
 from typing import List
 
@@ -16,3 +17,48 @@ class PredictResponse(BaseModel):
     steps: int
     start: str
     forecast: List[ForecastPoint]
+"""
+
+from pydantic import BaseModel, EmailStr
+from datetime import date
+
+class LoginIn(BaseModel):
+    email: EmailStr
+    password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    full_name: str | None = None
+    role: str
+
+class UserOut(BaseModel):
+    id: int
+    email: EmailStr
+    full_name: str | None
+    role: str
+    is_active: bool
+
+class UploadSummary(BaseModel):
+    rows_inserted: int
+    file_saved_as: str
+
+# Predicción por 4 atributos (concentration puede venir número)
+class PredictByAttrs(BaseModel):
+    name: str
+    concentration: str | int
+    dosage_form: str
+    unit_measure: str
+    periods: int = 6
+
+class ForecastPoint(BaseModel):
+    date: date
+    yhat: float
+
+class PredictResponse(BaseModel):
+    modelo: str
+    points: list[ForecastPoint]

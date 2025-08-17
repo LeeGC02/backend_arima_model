@@ -1,5 +1,17 @@
+"""
+Punto de entrada de la API:
+- Crea la app de FastAPI
+- Habilita CORS (para que tu frontend pueda llamar a la API)
+- Importa modelos y crea las tablas si no existen
+- Registra los routers (módulos)
+"""
+
+
+"""
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+
+
 from pathlib import Path
 import pandas as pd
 
@@ -77,3 +89,32 @@ def predict(med: str, body: PredictQuery):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al pronosticar: {e}")
+"""
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from .db import Base, engine
+# importa modelos antes de create_all
+from .models.user import User
+from .models.medicine import Medicine
+from .models.historical import Historical
+from .models.prediction import Prediction
+from .models.report import Report
+from .routers import auth, historical, visualize, predict
+
+app = FastAPI(title="Medicamentos API (ARIMA PKL por 4 atributos)", version="1.0.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], allow_methods=["*"], allow_headers=["*"], allow_credentials=True,
+)
+
+Base.metadata.create_all(bind=engine)
+
+@app.get("/")
+def root(): return {"ok": True, "msg": "API viva. Visita /docs"}
+
+app.include_router(auth.router)
+app.include_router(historical.router)
+app.include_router(visualize.router)
+app.include_router(predict.router)
