@@ -106,7 +106,10 @@ app = FastAPI(title="Medicamentos API (ARIMA PKL por 4 atributos)", version="1.0
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], allow_methods=["*"], allow_headers=["*"], allow_credentials=True,
+    allow_origins=["http://localhost:5173"], 
+    allow_methods=["*"], 
+    allow_headers=["*"], 
+    allow_credentials=True,
 )
 
 Base.metadata.create_all(bind=engine)
